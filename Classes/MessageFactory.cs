@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml;
 using TcpCommunication.Classes.Exceptions;
 using TcpCommunication.Interfaces;
 
@@ -42,5 +43,25 @@ namespace TcpCommunication.Classes
         }
 
         public dynamic Create(string a_sTypeName) => Create<dynamic>(a_sTypeName);
+
+        public dynamic Create(NetworkData a_oNetData)
+        {
+            if ((a_oNetData?.DataLength() ?? 0) < 1)
+                throw new NetworkDataBufferIsEmpty("Dane telegramu");
+
+            var _oByteData = a_oNetData.Buffer.Take(a_oNetData.DataLength()).ToArray();
+
+            using var _oXmlReader = XmlReader.Create(new MemoryStream(_oByteData));
+            
+            _oXmlReader.Read();
+
+            string _sTypeName = _oXmlReader.Name;
+
+            var _oMessage = Create(_sTypeName);
+
+            _oMessage.FromXml( new MemoryStream(_oByteData));
+
+            return _oMessage;
+        }
     }
 }

@@ -34,7 +34,10 @@ namespace TcpCommunication.Classes.Messages
 
         public LoginMessage ProcessRequest()
         {
-            Response = new Response(0, "Login complete");
+            if (Login.Equals("jacek") && Password.Equals("34jacek12"))
+                Response = new Response(0, "Login complete");
+            else
+                Response = new Response(-1, new Exception("Błędny login lub hasło"));
 
             return this;
         }

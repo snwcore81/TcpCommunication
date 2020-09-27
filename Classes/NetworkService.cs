@@ -32,15 +32,7 @@ namespace TcpCommunication.Classes
         public bool HasAnyData => DataLength() > 0;        
         public byte[] Buffer
         {
-            get
-            {
-                if (HasAnyData)
-                {
-                    return m_oBuffer;
-                }
-
-                throw new NetworkDataBufferIsEmpty("Główny");
-            }
+            get => m_oBuffer;
             set
             {
                 if ((value?.Length ?? -1) < 1)
@@ -58,6 +50,8 @@ namespace TcpCommunication.Classes
 
     public abstract class NetworkService
     {
+        public const int BUFFER_SIZE = 1000000;
+
         public enum ModeEnum
         {
             Client = 0x001,
@@ -67,38 +61,98 @@ namespace TcpCommunication.Classes
         public INetworkAction       NetworkAction { get; set; }
         public IPAddress            Address { get; protected set; }
         public int                  Port { get; protected set; }
-        public NetworkService(ModeEnum Mode, IPAddress Address, int Port)
+        public NetworkData          Data { get; protected set; }
+
+        public NetworkService(ModeEnum Mode, int a_iBufferSize = BUFFER_SIZE)
         {
             this.Mode = Mode;
+            this.Data = new NetworkData(a_iBufferSize);
             this.NetworkAction = null;
+        }
+        public NetworkService(ModeEnum Mode, IPAddress Address, int Port, int a_iBufferSize = BUFFER_SIZE) : 
+            this(Mode,a_iBufferSize)
+        {
             this.Address = Address;
             this.Port = Port;
         }
-
         public abstract bool IsConnected { get; }
         public abstract Socket NetworkSocket { get; }
+        public abstract void Establish();
         public virtual void FireSend(NetworkData a_oData)
         {
-            NetworkSocket?.BeginSend(a_oData.Buffer, 0, a_oData.DataLength(true), SocketFlags.None, new AsyncCallback(SendCallback), this);
+            try
+            {
+                NetworkSocket?.BeginSend(a_oData.Buffer, 0, a_oData.DataLength(true), SocketFlags.None, new AsyncCallback(SendCallback), this);
+
+                NetworkAction?.StateChanged(State.Sending,this);
+
+            }
+            catch (Exception)
+            {
+                NetworkAction?.StateChanged(State.Error,this);
+            }
         }
 
         public virtual void FireReceive()
         {
-            //NetworkSocket?.BeginReceive()
+            Data?.Clear();
+
+            try
+            {
+                NetworkSocket?.BeginReceive(Data.Buffer, 0, Data.BufferLength, SocketFlags.None, new AsyncCallback(ReceiveCallback), this);
+
+                NetworkAction?.StateChanged(State.Receiving,this);
+            }
+            catch (Exception)
+            {
+                NetworkAction?.StateChanged(State.Error,this);
+            }
         }
 
         protected virtual void SendCallback(IAsyncResult ar)
         {
             NetworkService _obj = ar.AsyncState as NetworkService;
 
-            if (_obj.NetworkSocket.EndSend(ar) > 0)
+            try
             {
-                _obj.NetworkAction?.StateChanged(State.Sent);
+                if (_obj.NetworkSocket.EndSend(ar) > 0)
+                {
+                    _obj.NetworkAction?.StateChanged(State.Sent,this);
+
+                    return;
+                }                
             }
-            else
+            catch (Exception)
             {
-                _obj.NetworkAction?.StateChanged(State.Error);
-            }                   
+            }
+
+            _obj.NetworkAction?.StateChanged(State.Error);
+        }
+
+        protected virtual void ReceiveCallback(IAsyncResult ar)
+        {
+            NetworkService _obj = ar.AsyncState as NetworkService;
+
+            try
+            {
+                int _iSize = _obj.NetworkSocket.EndReceive(ar);
+
+                if (_iSize > 0 && (_obj.Data?.HasAnyData ?? false))
+                {
+                    _iSize = _obj.Data.DataLength();
+
+                    _obj.NetworkAction?.StateChanged(State.Received,_obj.Data.Buffer.Take(_iSize).ToArray());
+
+                    _obj.FireReceive();
+
+                    return;
+                }
+            }
+            catch (Exception)
+            {               
+            }
+
+            _obj.NetworkAction?.StateChanged(State.Error,this);
         }
         
     }

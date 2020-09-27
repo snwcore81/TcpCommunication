@@ -14,6 +14,8 @@ namespace TcpCommunication.Interfaces
             Sent       = 0x0011,
             Receiving  = 0x0020,
             Received   = 0x0021,
+            Listening  = 0x0030,
+            Established= 0x0031,
             Error      = 0x0100
         }
 
