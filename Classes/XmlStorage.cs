@@ -13,7 +13,7 @@ namespace TcpCommunication.Classes
         [IgnoreDataMember]
         public T BaseObject { get; protected set; }
 
-        public virtual Stream ToXml()
+        public virtual MemoryStream ToXml()
         {
             DataContractSerializer _oSerializer = new DataContractSerializer(typeof(T));
 

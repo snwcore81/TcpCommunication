@@ -10,11 +10,15 @@ namespace TcpCommunication.Classes.Services
 {
     public class ServerService<T> : NetworkService where T : ClientService
     {
-        private readonly TcpListener m_oNetObject;
+        private readonly TcpListener    m_oNetObject;
+
+        private readonly List<T>        m_oConnectedClients;
 
         public ServerService(IPAddress Address, int Port) : base(ModeEnum.Server,Address,Port)
         {
             m_oNetObject = new TcpListener(Address, Port);
+
+            m_oConnectedClients = new List<T>();
         }
 
         public override bool IsConnected => (m_oNetObject?.Server?.Connected ?? false);
@@ -38,20 +42,20 @@ namespace TcpCommunication.Classes.Services
             {
             }
 
-            NetworkAction?.StateChanged(State.Error,this);
+            NetworkAction?.StateChanged(State.Error,new StateObject(this));
         }
 
         protected virtual void AcceptConnection()
         {
             try
             {
-                m_oNetObject?.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), this);
+                NetworkAction?.StateChanged(State.Listening, new StateObject(this));
 
-                NetworkAction?.StateChanged(State.Listening,this);
+                m_oNetObject?.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), this);                
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                NetworkAction?.StateChanged(State.Error, this);
+                NetworkAction?.StateChanged(State.Error, new StateObject(this,e));
             }            
         }
 
@@ -68,10 +72,13 @@ namespace TcpCommunication.Classes.Services
                 });
 
                 _client.NetworkAction = _obj.NetworkAction;
+                _client.HostedBy = _obj;
+
+                _obj?.m_oConnectedClients?.Add(_client);
+
+                _obj?.NetworkAction?.StateChanged(State.Established, new StateObject(this,_client));
 
                 _client.FireReceive();
-
-                _obj?.NetworkAction?.StateChanged(State.Established,_client);
 
                 _obj?.AcceptConnection();
 
@@ -81,7 +88,28 @@ namespace TcpCommunication.Classes.Services
             {
             }
 
-            _obj?.NetworkAction?.StateChanged(State.Error,this);
+            _obj?.NetworkAction?.StateChanged(State.Error,new StateObject(this));
         }
+
+        public List<T> ConnectedClients
+        {
+            get
+            {
+                m_oConnectedClients.RemoveAll((x) =>
+                {
+                    try
+                    {
+                        return !x.IsConnected;
+                    }
+                    catch (Exception)
+                    {
+                        return true;
+                    }
+                });
+
+                return m_oConnectedClients;
+            }
+        }
+
     }
 }

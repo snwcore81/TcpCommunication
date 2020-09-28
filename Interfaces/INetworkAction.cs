@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TcpCommunication.Classes;
 
 namespace TcpCommunication.Interfaces
 {
@@ -19,6 +20,6 @@ namespace TcpCommunication.Interfaces
             Error      = 0x0100
         }
 
-        void StateChanged(State a_eState, object a_oStateObject = null);
+        void StateChanged(State a_eState, StateObject a_oStateObject = null);
     }
 }

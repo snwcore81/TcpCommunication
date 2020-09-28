@@ -25,7 +25,7 @@ namespace TcpCommunication.Classes
             Type _Type = typeof(T);
             string _sTypeName = _Type.Name;
 
-            if (!(_Type.GetInterfaces()?.ToList()?.Contains(typeof(IMessage<T>)) ?? false))
+            if (!(_Type.GetInterfaces()?.ToList()?.Contains(typeof(IMessage)) ?? false))
                 throw new MessageFactoryIfaceNotFound(_sTypeName);
 
             if (!m_oMessages.ContainsKey(_sTypeName))
@@ -51,15 +51,20 @@ namespace TcpCommunication.Classes
 
             var _oByteData = a_oNetData.Buffer.Take(a_oNetData.DataLength()).ToArray();
 
-            using var _oXmlReader = XmlReader.Create(new MemoryStream(_oByteData));
-            
+            return Create(_oByteData);
+        }
+
+        public dynamic Create(byte[] a_oData)
+        {
+            using var _oXmlReader = XmlReader.Create(new MemoryStream(a_oData));
+
             _oXmlReader.Read();
 
             string _sTypeName = _oXmlReader.Name;
 
             var _oMessage = Create(_sTypeName);
 
-            _oMessage.FromXml( new MemoryStream(_oByteData));
+            _oMessage.FromXml(new MemoryStream(a_oData));
 
             return _oMessage;
         }

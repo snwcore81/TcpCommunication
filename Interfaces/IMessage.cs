@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TcpCommunication.Classes;
 
 namespace TcpCommunication.Interfaces
 {
-    public interface IMessage<T1> where T1 : class  
+    public interface IMessage
     {
-        T1 ProcessRequest();
-        T1 ProcessResponse();
+        IMessage ProcessRequest(StateObject Object = null);
+        IMessage ProcessResponse(StateObject Object = null);
     }
 }

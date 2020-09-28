@@ -57,17 +57,21 @@ namespace TcpCommunication.Classes
             Client = 0x001,
             Server = 0x002
         }        
+        public string               Identifier { get; set; }
         public ModeEnum             Mode { get; protected set; }
         public INetworkAction       NetworkAction { get; set; }
         public IPAddress            Address { get; protected set; }
         public int                  Port { get; protected set; }
         public NetworkData          Data { get; protected set; }
+        public NetworkService       HostedBy { get; set; }
 
         public NetworkService(ModeEnum Mode, int a_iBufferSize = BUFFER_SIZE)
         {
+            this.Identifier = GetHashCode().ToString("X8");
             this.Mode = Mode;
             this.Data = new NetworkData(a_iBufferSize);
             this.NetworkAction = null;
+            this.HostedBy = null;
         }
         public NetworkService(ModeEnum Mode, IPAddress Address, int Port, int a_iBufferSize = BUFFER_SIZE) : 
             this(Mode,a_iBufferSize)
@@ -82,14 +86,13 @@ namespace TcpCommunication.Classes
         {
             try
             {
+                NetworkAction?.StateChanged(State.Sending, new StateObject(this,a_oData));
+
                 NetworkSocket?.BeginSend(a_oData.Buffer, 0, a_oData.DataLength(true), SocketFlags.None, new AsyncCallback(SendCallback), this);
-
-                NetworkAction?.StateChanged(State.Sending,this);
-
             }
             catch (Exception)
             {
-                NetworkAction?.StateChanged(State.Error,this);
+                NetworkAction?.StateChanged(State.Error,new StateObject(this));
             }
         }
 
@@ -99,13 +102,13 @@ namespace TcpCommunication.Classes
 
             try
             {
-                NetworkSocket?.BeginReceive(Data.Buffer, 0, Data.BufferLength, SocketFlags.None, new AsyncCallback(ReceiveCallback), this);
+                NetworkAction?.StateChanged(State.Receiving, new StateObject(this));
 
-                NetworkAction?.StateChanged(State.Receiving,this);
+                NetworkSocket?.BeginReceive(Data.Buffer, 0, Data.BufferLength, SocketFlags.None, new AsyncCallback(ReceiveCallback), this);
             }
             catch (Exception)
             {
-                NetworkAction?.StateChanged(State.Error,this);
+                NetworkAction?.StateChanged(State.Error,new StateObject(this));
             }
         }
 
@@ -117,7 +120,7 @@ namespace TcpCommunication.Classes
             {
                 if (_obj.NetworkSocket.EndSend(ar) > 0)
                 {
-                    _obj.NetworkAction?.StateChanged(State.Sent,this);
+                    _obj.NetworkAction?.StateChanged(State.Sent,new StateObject(this));
 
                     return;
                 }                
@@ -140,8 +143,9 @@ namespace TcpCommunication.Classes
                 if (_iSize > 0 && (_obj.Data?.HasAnyData ?? false))
                 {
                     _iSize = _obj.Data.DataLength();
+                    byte[] _oBuffer = _obj.Data.Buffer.Take(_iSize).ToArray();
 
-                    _obj.NetworkAction?.StateChanged(State.Received,_obj.Data.Buffer.Take(_iSize).ToArray());
+                    _obj.NetworkAction?.StateChanged(State.Received,new StateObject(this, _oBuffer));
 
                     _obj.FireReceive();
 
@@ -152,8 +156,13 @@ namespace TcpCommunication.Classes
             {               
             }
 
-            _obj.NetworkAction?.StateChanged(State.Error,this);
+            _obj.NetworkAction?.StateChanged(State.Error,new StateObject(this));
         }
-        
+        public override string ToString() => $"Identifier={Identifier}[{GetType().Name.CleanType()}={NetworkSocket?.LocalEndPoint}]";
+        public virtual bool IsHostedBy => HostedBy != null;
+        public virtual T GetHostedBy<T>() where T : NetworkService
+        {
+            return (T)HostedBy;
+        }
     }
 }

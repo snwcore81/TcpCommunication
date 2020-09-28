@@ -19,6 +19,7 @@ namespace TcpCommunication.Classes.Services
             {
                 Client = a_oSocket
             };
+
         }
 
         public ClientService(IPAddress Address,int Port,int a_iBufferLength = 100000) : 
@@ -39,7 +40,7 @@ namespace TcpCommunication.Classes.Services
             {
                 m_oNetObject.BeginConnect(Address, Port, new AsyncCallback(AsyncConnect), this);
 
-                NetworkAction?.StateChanged(State.Connecting, this);
+                NetworkAction?.StateChanged(State.Connecting, new StateObject(this));
 
                 return;
             }
@@ -47,7 +48,7 @@ namespace TcpCommunication.Classes.Services
             {
             }
 
-            NetworkAction?.StateChanged(State.Error,this);
+            NetworkAction?.StateChanged(State.Error,new StateObject(this));
         }
 
         protected virtual void AsyncConnect(IAsyncResult ar)
@@ -58,7 +59,9 @@ namespace TcpCommunication.Classes.Services
             {
                 _obj.NetworkSocket.EndConnect(ar);
 
-                _obj?.NetworkAction?.StateChanged(State.Connected, this);
+                _obj?.FireReceive();
+
+                _obj?.NetworkAction?.StateChanged(State.Connected, new StateObject(this));
 
                 return;
             }
@@ -66,7 +69,9 @@ namespace TcpCommunication.Classes.Services
             {
             }
 
-            _obj?.NetworkAction?.StateChanged(State.Error,this);
+            _obj?.NetworkAction?.StateChanged(State.Error,new StateObject(this));
         }
+
+      
     }
 }

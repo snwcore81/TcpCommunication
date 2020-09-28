@@ -13,9 +13,11 @@ namespace TcpCommunication
     {
         static void Main(string[] args)
         {
-            var _testClass = new TestClass();
+            MessageFactory.Instance.Register<LoginMessage>();
 
-            _testClass.Run();
+            new TestServer().Run();
+
+            new TestClient().Run();
 
             Console.ReadKey();
         }

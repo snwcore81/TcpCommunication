@@ -21,7 +21,7 @@ namespace TcpCommunication.Classes
 
         public override string ToString()
         {
-            return $"[ResponseCode={ResponseCode}|ResponseObject={ResponseObject}]";
+            return $"[Kod={ResponseCode}|Obiekt={ResponseObject}]";
         }
     }
 }
