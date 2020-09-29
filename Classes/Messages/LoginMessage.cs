@@ -16,7 +16,7 @@ namespace TcpCommunication.Classes.Messages
         [DataMember]
         public Response Response { get; private set; }
 
-        public LoginMessage() : base()
+        public LoginMessage()
         {
             Login = string.Empty;
             Response = null;
@@ -33,14 +33,26 @@ namespace TcpCommunication.Classes.Messages
         {
             var _client = Object.GetObject<ClientService>();
 
-            if (_client.IsHostedBy)
+            if (_client.IsServerRegistered)
             {
-                var _server = _client.GetHostedBy<ServerService<ClientService>>();
+                var _server = _client.GetRegisteredServer<ServerService<ClientService>>();
 
                 if (_server.ConnectedClients.Find(x => x.Identifier == Login) == null)
                 {
                     _client.Identifier = Login;
                     Response = new Response(1, "Zalogowano poprawne");
+
+                    TextMessage _msg = new TextMessage
+                    {
+                        From = "Server",
+                        To = "*",
+                        Text = $"Na serwerze zalogował się użytkownik <{Login}>"
+                    };
+
+                    _server.FireSendBroadcast(new NetworkData(1000)
+                    {
+                        Buffer = _msg.ToXml().ToArray()
+                    });
                 }
                 else
                 {
@@ -66,6 +78,8 @@ namespace TcpCommunication.Classes.Messages
             if (Response.ResponseCode == 1)
             {
                 _client.Identifier = Login;
+
+                Console.WriteLine("Zalogowano do systemu!");
             }
 
             return this;                   

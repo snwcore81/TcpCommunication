@@ -13,13 +13,33 @@ namespace TcpCommunication
     {
         static void Main(string[] args)
         {
-            MessageFactory.Instance.Register<LoginMessage>();
+            Console.Clear();
 
-            new TestServer().Run();
+            if ((args?.Length ?? 0) < 1)
+            {
+                Console.WriteLine("Brak argumentu uruchomieniowego!\n1 - serwer\n2 - klient");
 
-            new TestClient().Run();
+            }
+            else
+            {
+                int.TryParse(args[0], out int _iMode);
 
-            Console.ReadKey();
+                MessageFactory.Instance.Register<LoginMessage>();
+                MessageFactory.Instance.Register<TextMessage>();
+
+                switch (_iMode)
+                {
+                    case 1:
+                        new TestServer().Run(); Console.ReadKey(); break;
+
+                    case 2:
+                        new TestClient().Run(); break;
+
+                }                      
+            }
+
+           
+            
         }
     }
 }

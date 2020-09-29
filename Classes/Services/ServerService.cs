@@ -72,7 +72,7 @@ namespace TcpCommunication.Classes.Services
                 });
 
                 _client.NetworkAction = _obj.NetworkAction;
-                _client.HostedBy = _obj;
+                _client.RegisteredServer = _obj;
 
                 _obj?.m_oConnectedClients?.Add(_client);
 
@@ -109,7 +109,24 @@ namespace TcpCommunication.Classes.Services
 
                 return m_oConnectedClients;
             }
-        }
+        }        
+        public T GetClientByIdentifier(string a_sIdentifier) => ConnectedClients.Find(x => x.Identifier == a_sIdentifier);
 
+        public virtual void FireSendBroadcast(NetworkData a_oData,T a_oSender = null)
+        {
+            foreach (var _oClient in ConnectedClients)
+            {
+                try
+                {
+                    if (_oClient != a_oSender)
+                    {
+                        _oClient.FireSend(a_oData);
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
     }
 }

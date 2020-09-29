@@ -65,9 +65,10 @@ namespace TcpCommunication
 
             Console.WriteLine($"OnReceived::{_message}");
 
-            _message.ProcessRequest(a_oStateObj);
-
-            _client.FireSend(new NetworkData(10000) { Buffer = _message.ToXml().ToArray() });
+            if (_message.ProcessRequest(a_oStateObj) != null)
+            {
+                _client.FireSend(new NetworkData(10000) { Buffer = _message.ToXml().ToArray() });
+            }
         }
 
         public virtual void Run()

@@ -11,43 +11,6 @@ using static TcpCommunication.Interfaces.INetworkAction;
 
 namespace TcpCommunication.Classes
 {
-    public class NetworkData
-    {
-        private readonly byte[] m_oBuffer;
-
-        public NetworkData(int a_iBufferSize)
-        {
-            m_oBuffer = new byte[a_iBufferSize] ;
-            Clear();
-        }
-        public void Clear()
-        {
-            Array.Fill<byte>(m_oBuffer, 0);
-        }
-        public int BufferLength => m_oBuffer?.Length ?? -1;
-        public int DataLength(bool a_bWithZero = false)
-        {
-            return m_oBuffer.ToList().FindIndex(x => x == 0) + (a_bWithZero ? 1 : 0);
-        }
-        public bool HasAnyData => DataLength() > 0;        
-        public byte[] Buffer
-        {
-            get => m_oBuffer;
-            set
-            {
-                if ((value?.Length ?? -1) < 1)
-                    throw new NetworkDataBufferIsEmpty("Wejściowy");
-
-                if (value.Length > BufferLength)
-                    throw new NetworkDataBufferToLarge("Wejśćiowy", BufferLength);
-
-                Clear();
-
-                Array.Copy(value, m_oBuffer, value.Length);
-            }
-        }
-    }
-
     public abstract class NetworkService
     {
         public const int BUFFER_SIZE = 1000000;
@@ -63,7 +26,7 @@ namespace TcpCommunication.Classes
         public IPAddress            Address { get; protected set; }
         public int                  Port { get; protected set; }
         public NetworkData          Data { get; protected set; }
-        public NetworkService       HostedBy { get; set; }
+        public NetworkService       RegisteredServer { get; set; }
 
         public NetworkService(ModeEnum Mode, int a_iBufferSize = BUFFER_SIZE)
         {
@@ -71,7 +34,7 @@ namespace TcpCommunication.Classes
             this.Mode = Mode;
             this.Data = new NetworkData(a_iBufferSize);
             this.NetworkAction = null;
-            this.HostedBy = null;
+            this.RegisteredServer = null;
         }
         public NetworkService(ModeEnum Mode, IPAddress Address, int Port, int a_iBufferSize = BUFFER_SIZE) : 
             this(Mode,a_iBufferSize)
@@ -159,10 +122,10 @@ namespace TcpCommunication.Classes
             _obj.NetworkAction?.StateChanged(State.Error,new StateObject(this));
         }
         public override string ToString() => $"Identifier={Identifier}[{GetType().Name.CleanType()}={NetworkSocket?.LocalEndPoint}]";
-        public virtual bool IsHostedBy => HostedBy != null;
-        public virtual T GetHostedBy<T>() where T : NetworkService
+        public virtual bool IsServerRegistered => RegisteredServer != null;
+        public virtual T GetRegisteredServer<T>() where T : NetworkService
         {
-            return (T)HostedBy;
+            return (T)RegisteredServer;
         }
     }
 }
