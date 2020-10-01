@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Threading.Tasks;
 using TcpCommunication.Classes.Exceptions;
 using TcpCommunication.Interfaces;
 
@@ -45,7 +47,7 @@ namespace TcpCommunication.Classes
         public abstract bool IsConnected { get; }
         public abstract Socket NetworkSocket { get; }
         public abstract void Establish();
-        public virtual void FireSend(NetworkData a_oData)
+        public virtual void AsyncSend(NetworkData a_oData)
         {
             try
             {
@@ -59,7 +61,7 @@ namespace TcpCommunication.Classes
             }
         }
 
-        public virtual void FireReceive()
+        public virtual void AsyncReceive()
         {
             Data?.Clear();
 
@@ -73,6 +75,25 @@ namespace TcpCommunication.Classes
             {
                 NetworkAction?.StateChanged(State.Error,new StateObject(this));
             }
+        }
+
+        public virtual StateObject SyncReceive()
+        {
+            try
+            {
+                Data?.Clear();
+
+                NetworkSocket?.Receive(Data.Buffer, SocketFlags.None) ;
+
+                return new StateObject(this, Data);
+            }
+            catch (Exception)
+            {
+            }
+
+            NetworkAction?.StateChanged(State.Error);
+
+            return null;            
         }
 
         protected virtual void SendCallback(IAsyncResult ar)
@@ -105,12 +126,7 @@ namespace TcpCommunication.Classes
 
                 if (_iSize > 0 && (_obj.Data?.HasAnyData ?? false))
                 {
-                    _iSize = _obj.Data.DataLength();
-                    byte[] _oBuffer = _obj.Data.Buffer.Take(_iSize).ToArray();
-
-                    _obj.NetworkAction?.StateChanged(State.Received,new StateObject(this, _oBuffer));
-
-                    _obj.FireReceive();
+                    _obj.NetworkAction?.StateChanged(State.Received,new StateObject(this, Data));
 
                     return;
                 }
@@ -122,7 +138,7 @@ namespace TcpCommunication.Classes
             _obj.NetworkAction?.StateChanged(State.Error,new StateObject(this));
         }
         public override string ToString() => $"Identifier={Identifier}[{GetType().Name.CleanType()}={NetworkSocket?.LocalEndPoint}]";
-        public virtual bool IsServerRegistered => RegisteredServer != null;
+        public virtual bool HasRegisteredServer => RegisteredServer != null;
         public virtual T GetRegisteredServer<T>() where T : NetworkService
         {
             return (T)RegisteredServer;

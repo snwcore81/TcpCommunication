@@ -59,9 +59,8 @@ namespace TcpCommunication
         protected void OnReceived(StateObject a_oStateObj)
         {
             var _client = a_oStateObj.GetObject<ClientService>();
-            var _buffer = a_oStateObj.GetData<byte[]>();
 
-            var _message = MessageFactory.Instance.Create(_buffer);
+            var _message = MessageFactory.Instance.Create(_client.Data.BufferWithData);
 
             try
             {
@@ -71,6 +70,8 @@ namespace TcpCommunication
             {
                 Console.WriteLine($"Wystąpił błąd! {e.Message}");
             }
+
+            _client.AsyncReceive();
         }
 
         protected void OnConnected(StateObject a_oStateObj)
@@ -84,12 +85,10 @@ namespace TcpCommunication
                 Login = Console.ReadLine()
             };
 
-            _client.FireSend(new NetworkData(10000)
-            {
-                Buffer = _loginTelegram.ToXml().ToArray()
-            });
-        }
+            _client.AsyncSend(_loginTelegram.AsNetworkData());
 
+            OnReceived(_client.SyncReceive());
+        }
         public virtual void MenuDisplay()
         {
             Console.WriteLine();
@@ -121,7 +120,7 @@ namespace TcpCommunication
                 Text = _sText
             };
 
-            Client.FireSend(new NetworkData(10000) { Buffer = _msgTo.ToXml().ToArray() });
+            Client.AsyncSend(_msgTo.AsNetworkData());
         }
 
         public virtual void Run()

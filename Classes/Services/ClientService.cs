@@ -59,8 +59,6 @@ namespace TcpCommunication.Classes.Services
             {
                 _obj.NetworkSocket.EndConnect(ar);
 
-                _obj?.FireReceive();
-
                 _obj?.NetworkAction?.StateChanged(State.Connected, new StateObject(this));
 
                 return;

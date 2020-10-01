@@ -33,7 +33,7 @@ namespace TcpCommunication.Classes.Messages
         {
             var _client = Object.GetObject<ClientService>();
 
-            if (_client.IsServerRegistered)
+            if (_client.HasRegisteredServer)
             {
                 var _server = _client.GetRegisteredServer<ServerService<ClientService>>();
 
@@ -49,10 +49,7 @@ namespace TcpCommunication.Classes.Messages
                         Text = $"Na serwerze zalogował się użytkownik <{Login}>"
                     };
 
-                    _server.FireSendBroadcast(new NetworkData(1000)
-                    {
-                        Buffer = _msg.ToXml().ToArray()
-                    });
+                    _server.AsyncSendBroadcast(_msg.AsNetworkData());
                 }
                 else
                 {
@@ -84,7 +81,13 @@ namespace TcpCommunication.Classes.Messages
 
             return this;                   
         }
-
+        public NetworkData AsNetworkData(int a_iBufferSize = 100000)
+        {
+            return new NetworkData(a_iBufferSize)
+            {
+                Buffer = ToXml().ToArray()
+            };
+        }
         public override string ToString()
         {
             return $"[Login={Login}|Response={Response}]";

@@ -78,8 +78,6 @@ namespace TcpCommunication.Classes.Services
 
                 _obj?.NetworkAction?.StateChanged(State.Established, new StateObject(this,_client));
 
-                _client.FireReceive();
-
                 _obj?.AcceptConnection();
 
                 return;
@@ -112,7 +110,7 @@ namespace TcpCommunication.Classes.Services
         }        
         public T GetClientByIdentifier(string a_sIdentifier) => ConnectedClients.Find(x => x.Identifier == a_sIdentifier);
 
-        public virtual void FireSendBroadcast(NetworkData a_oData,T a_oSender = null)
+        public virtual void AsyncSendBroadcast(NetworkData a_oData,T a_oSender = null)
         {
             foreach (var _oClient in ConnectedClients)
             {
@@ -120,7 +118,7 @@ namespace TcpCommunication.Classes.Services
                 {
                     if (_oClient != a_oSender)
                     {
-                        _oClient.FireSend(a_oData);
+                        _oClient.AsyncSend(a_oData);
                     }
                 }
                 catch (Exception)

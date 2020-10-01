@@ -30,7 +30,7 @@ namespace TcpCommunication
                 switch (_iMode)
                 {
                     case 1:
-                        new TestServer().Run(); Console.ReadKey(); break;
+                        new TestServer().Run(); break;
 
                     case 2:
                         new TestClient().Run(); break;

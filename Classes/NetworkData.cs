@@ -41,5 +41,7 @@ namespace TcpCommunication.Classes
                 Array.Copy(value, m_oBuffer, value.Length);
             }
         }
+
+        public byte[] BufferWithData => Buffer.Take(DataLength()).ToArray();
     }
 }

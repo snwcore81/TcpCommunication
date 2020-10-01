@@ -9,5 +9,7 @@ namespace TcpCommunication.Interfaces
     {
         IMessage ProcessRequest(StateObject Object = null);
         IMessage ProcessResponse(StateObject Object = null);
+
+        NetworkData AsNetworkData(int a_iDataSize = NetworkService.BUFFER_SIZE);
     }
 }

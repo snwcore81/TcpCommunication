@@ -35,6 +35,7 @@ namespace TcpCommunication
                         break;
 
                     case State.Established:
+                        OnEstablished(a_oStateObj);
                         break;
 
                     case State.Connecting:
@@ -59,16 +60,22 @@ namespace TcpCommunication
         protected void OnReceived(StateObject a_oStateObj)
         {
             var _client = a_oStateObj.GetObject<ClientService>();
-            var _buffer = a_oStateObj.GetData<byte[]>();
 
-            var _message = MessageFactory.Instance.Create(_buffer);
+            var _message = MessageFactory.Instance.Create(_client.Data.BufferWithData);
 
             Console.WriteLine($"OnReceived::{_message}");
 
             if (_message.ProcessRequest(a_oStateObj) != null)
             {
-                _client.FireSend(new NetworkData(10000) { Buffer = _message.ToXml().ToArray() });
+                _client.AsyncSend(_message.AsNetworkData(100000));
             }
+
+            _client.AsyncReceive();
+        }
+
+        protected void OnEstablished(StateObject a_oStateObj)
+        {
+            a_oStateObj.GetData<ClientService>().AsyncReceive();
         }
 
         public virtual void Run()
@@ -79,6 +86,8 @@ namespace TcpCommunication
             };
 
             Server.Establish();
+
+            Console.ReadKey();
         }
     }
 }

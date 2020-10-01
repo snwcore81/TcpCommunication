@@ -34,23 +34,17 @@ namespace TcpCommunication.Classes.Messages
         {
             var _client = Object.GetObject<ClientService>();
 
-            if (_client.IsServerRegistered)
+            if (_client.HasRegisteredServer)
             {
                 var _server = _client.GetRegisteredServer<ServerService<ClientService>>();
 
                 if (To == "*")
                 {
-                    _server.FireSendBroadcast(new NetworkData(1000)
-                    {
-                        Buffer = this.ToXml().ToArray()
-                    },_client);
+                    _server.AsyncSendBroadcast(AsNetworkData(),_client);
                 }
                 else
                 {
-                    _server.GetClientByIdentifier(To)?.FireSend(new NetworkData(1000)
-                    {
-                        Buffer = this.ToXml().ToArray()
-                    });
+                    _server.GetClientByIdentifier(To)?.AsyncSend(AsNetworkData());
                 }
             }
 
@@ -63,7 +57,13 @@ namespace TcpCommunication.Classes.Messages
 
             return this;
         }
-
+        public NetworkData AsNetworkData(int a_iBufferSize = 100000)
+        {
+            return new NetworkData(a_iBufferSize)
+            {
+                Buffer = ToXml().ToArray()
+            };
+        }
         public override string ToString()
         {
             return $"Od:{From}|Do:{To}|Wiadomosc={Text}";
