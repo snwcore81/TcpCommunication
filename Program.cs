@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Xml;
 using TcpCommunication.Classes;
+using TcpCommunication.Classes.Database.Objects;
 using TcpCommunication.Classes.Messages;
 
 namespace TcpCommunication
@@ -13,6 +14,16 @@ namespace TcpCommunication
     {
         static void Main(string[] args)
         {
+            LoginDbObject _dao = new LoginDbObject
+            {
+                Login = "Jacek"
+            };
+
+            Console.WriteLine(_dao);
+
+            Console.ReadKey();
+
+            /*
             Console.Clear();
 
             if ((args?.Length ?? 0) < 1)
@@ -23,6 +34,8 @@ namespace TcpCommunication
             else
             {
                 int.TryParse(args[0], out int _iMode);
+
+                XmlStorageTypes.Register<Exception>();
 
                 MessageFactory.Instance.Register<LoginMessage>();
                 MessageFactory.Instance.Register<TextMessage>();
@@ -37,9 +50,8 @@ namespace TcpCommunication
 
                 }                      
             }
-
-           
-            
+            */
+                       
         }
     }
 }

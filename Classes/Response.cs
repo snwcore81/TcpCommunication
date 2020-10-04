@@ -9,19 +9,19 @@ namespace TcpCommunication.Classes
     public class Response
     {
         [DataMember]
-        public int ResponseCode { get; private set; }
+        public int Code { get; private set; }
         [DataMember]
-        public object ResponseObject { get; private set; }
+        public object Object { get; private set; }
 
-        public Response(int ResponseCode, object ResponseObject)
+        public Response(int Code, object Object)
         {
-            this.ResponseCode = ResponseCode;
-            this.ResponseObject = ResponseObject;
+            this.Code = Code;
+            this.Object = Object;
         }
 
         public override string ToString()
         {
-            return $"[Kod={ResponseCode}|Obiekt={ResponseObject}]";
+            return $"[Kod={Code}|Obiekt={Object}]";
         }
     }
 }

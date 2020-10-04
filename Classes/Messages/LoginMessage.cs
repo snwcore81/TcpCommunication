@@ -66,13 +66,13 @@ namespace TcpCommunication.Classes.Messages
         {
             var _client = Object.GetObject<ClientService>();
 
-            if (Response.ResponseObject is Exception)
-                throw Response.ResponseObject as Exception;
+            if (Response.Object is Exception)
+                throw Response.Object as Exception;
 
-            if (Response.ResponseCode == 0)
+            if (Response.Code == 0)
                 throw new Exception($"Błąd podczas logowania! {Response}");
 
-            if (Response.ResponseCode == 1)
+            if (Response.Code == 1)
             {
                 _client.Identifier = Login;
 

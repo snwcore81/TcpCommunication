@@ -62,7 +62,7 @@ namespace TcpCommunication.Classes
 
             string _sTypeName = _oXmlReader.Name;
 
-            var _oMessage = Create(_sTypeName);
+            var _oMessage = Create<IXmlStorage>(_sTypeName);
 
             _oMessage.FromXml(new MemoryStream(a_oData));
 

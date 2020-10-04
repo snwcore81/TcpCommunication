@@ -34,7 +34,7 @@ namespace TcpCommunication.Classes
 
         public override string ToString()
         {
-            return $"{m_oObject.ToString() ?? ""}";
+            return $"{m_oObject?.ToString() ?? ""}";
         }
     }
 }
