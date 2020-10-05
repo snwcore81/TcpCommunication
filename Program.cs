@@ -21,6 +21,12 @@ namespace TcpCommunication
 
             Console.WriteLine(_dao);
 
+            _dao.SetPropValue("Login","Testowy");
+            _dao.SetPropValue("Tsn", 10);
+
+            foreach (var _name in _dao.GetPropNameByType(Classes.Database.FieldType.PrimaryKey))
+                Console.WriteLine($"{_name}={_dao.GetPropValue<string>(_name)}");
+
             Console.ReadKey();
 
             /*

@@ -7,10 +7,10 @@ namespace TcpCommunication.Interfaces
 {
     public interface IDbSource<T> where T : class
     {
-        void Exists(T Object = null);
-        void Select(T Object = null);
-        void Insert(T Object = null);
-        void Update(T Object = null);
-        void Delete(T Object = null);
+        bool Exists(T Object = null);
+        T Select(T Object = null);
+        T Insert(T Object = null);
+        bool Update(T Object = null);
+        bool Delete(T Object = null);
     }
 }
