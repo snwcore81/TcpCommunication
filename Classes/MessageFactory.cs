@@ -14,7 +14,7 @@ namespace TcpCommunication.Classes
     {
         public static readonly MessageFactory Instance = new MessageFactory();
 
-        private Dictionary<string, Type> m_oMessages;
+        private readonly Dictionary<string, Type> m_oMessages;
 
         private MessageFactory()
         {
@@ -25,7 +25,7 @@ namespace TcpCommunication.Classes
             Type _Type = typeof(T);
             string _sTypeName = _Type.Name;
 
-            if (!(_Type.GetInterfaces()?.ToList()?.Contains(typeof(IMessage)) ?? false))
+            if (!(_Type.GetInterfaces()?.ToArray()?.Contains(typeof(IMessage)) ?? false))
                 throw new MessageFactoryIfaceNotFound(_sTypeName);
 
             if (!m_oMessages.ContainsKey(_sTypeName))

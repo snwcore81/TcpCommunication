@@ -61,13 +61,13 @@ namespace TcpCommunication
         {
             var _client = a_oStateObj.GetObject<ClientService>();
 
-            var _message = MessageFactory.Instance.Create(_client.Data.BufferWithData);
+            var _message = MessageFactory.Instance.Create(_client.Data.BufferWithData) as IMessage;
 
             Console.WriteLine($"OnReceived::{_message}");
 
             if (_message.ProcessRequest(a_oStateObj) != null)
             {
-                _client.AsyncSend(_message.AsNetworkData(100000));
+                _client.AsyncSend(_message.AsNetworkData());
             }
 
             _client.AsyncReceive();

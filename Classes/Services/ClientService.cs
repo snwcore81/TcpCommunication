@@ -38,7 +38,7 @@ namespace TcpCommunication.Classes.Services
 
             try
             {
-                m_oNetObject.BeginConnect(Address, Port, new AsyncCallback(AsyncConnect), this);
+                m_oNetObject.BeginConnect(Address, Port, new AsyncCallback(ConnectCallback), this);
 
                 NetworkAction?.StateChanged(State.Connecting, new StateObject(this));
 
@@ -51,7 +51,7 @@ namespace TcpCommunication.Classes.Services
             NetworkAction?.StateChanged(State.Error,new StateObject(this));
         }
 
-        protected virtual void AsyncConnect(IAsyncResult ar)
+        protected virtual void ConnectCallback(IAsyncResult ar)
         {
             var _obj = ar.AsyncState as ClientService;
 

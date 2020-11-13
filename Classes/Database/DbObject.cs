@@ -22,8 +22,8 @@ namespace TcpCommunication.Classes.Database
         NotNull    = 0x0010
     }
 
-    [System.AttributeUsage(System.AttributeTargets.Property)]
-    public class DbFieldAttribute : System.Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class DbFieldAttribute : Attribute
     {
         public string           Name { get; private set; }
         public FieldType        Type { get; set; } = FieldType.Other;

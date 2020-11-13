@@ -7,6 +7,8 @@ using System.Xml;
 using TcpCommunication.Classes;
 using TcpCommunication.Classes.Database.Objects;
 using TcpCommunication.Classes.Messages;
+using TcpCommunication.Classes.Exceptions;
+using TcpCommunication.Classes.System;
 
 namespace TcpCommunication
 {
@@ -14,6 +16,7 @@ namespace TcpCommunication
     {
         static void Main(string[] args)
         {
+            /*
             LoginDbObject _dao = new LoginDbObject
             {
                 Login = "Jacek"
@@ -28,9 +31,39 @@ namespace TcpCommunication
                 Console.WriteLine($"{_name}={_dao.GetPropValue<string>(_name)}");
 
             Console.ReadKey();
-
-            /*
+            */
+            
             Console.Clear();
+
+            Log.CurrentLevel = Log.LevelEnum.GOD;
+
+            using (var _log = Log.DEB("Program", "Main"))
+            {
+                _log.PR_DEB("coś tutaj sobie wydrukuję");
+
+                using (var _log1 = Log.DEB("Program","Inside"))
+                {
+                    _log1.PR_DEB("Teraz jestem w środku");
+
+                    using (var _log2 = Log.DET("Program","InsindeInside"))
+                    {
+                        _log2.PR_DET("I idziemy dalej :D");
+
+                        using (var _log3 = Log.DEB("Program", "InsindeInsideInside"))
+                        {
+                            _log3.PR_DEB("I idziemy dalej :D");
+                            _log3.PR_DEB("I idziemy dalej :D");
+                            _log3.PR_DEB("I idziemy dalej :D");
+                            _log3.PR_DEB("I idziemy dalej :D");
+                        }
+
+                        _log2.PR_DET("I idziemy dalej :D");
+                    }
+
+                }
+
+                _log.PR_DEB("a teraz na zewnątrz :-)");
+            }
 
             if ((args?.Length ?? 0) < 1)
             {
@@ -54,10 +87,10 @@ namespace TcpCommunication
                     case 2:
                         new TestClient().Run(); break;
 
-                }                      
+                }
             }
-            */
-                       
+
+
         }
     }
 }

@@ -57,7 +57,7 @@ namespace TcpCommunication.Classes.Messages
 
             return this;
         }
-        public NetworkData AsNetworkData(int a_iBufferSize = 100000)
+        public NetworkData AsNetworkData(int a_iBufferSize = NetworkService.BUFFER_SIZE)
         {
             return new NetworkData(a_iBufferSize)
             {
