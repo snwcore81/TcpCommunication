@@ -92,7 +92,7 @@ namespace TcpCommunication.Classes.System
             }
         }
 
-        private string GenerateLogLine(string a_sText, bool a_bIsHeader, LevelEnum a_eLevel)
+        private string GenerateLogShiftLine(string a_sText, bool a_bIsHeader, LevelEnum a_eLevel)
         {
             return $"{DateTime.Now:dd/MM/yyyy HH:mm:ss} <{a_eLevel}> {IteratedLineShift(a_bIsHeader)}{a_sText}" ;
         }
@@ -106,7 +106,7 @@ namespace TcpCommunication.Classes.System
         {
             if (a_eLevel <= Log.CurrentLevel)
             {
-                LogWriter?.Write(GenerateLogLine(a_sText, a_bIsHeader, a_eLevel));
+                LogWriter?.Write(GenerateLogShiftLine(a_sText, a_bIsHeader, a_eLevel));
             }
         }
 
