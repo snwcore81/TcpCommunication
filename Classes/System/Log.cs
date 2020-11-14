@@ -10,7 +10,7 @@ namespace TcpCommunication.Classes.System
         private static readonly object       LockObject = new object();
         public static string        LineShift { get; set; }     = "└─────┐";
         public static string        LineBack  { get; set; }     = "┌─────┘";
-        public static string        LinePrefix { get; set; }    = "│ ";
+        public static string        LinePrefix { get; set; }    = "│    ";
         public static ILogWriter    LogWriter { get; set; } = new ConsoleLogWriter();
         public static int           Iteration { get; private set; } = -1;
         public static List<string>  FullNameStack { get; private set; } = new List<string>();
@@ -124,7 +124,7 @@ namespace TcpCommunication.Classes.System
                     FullNameStack.RemoveAt(Log.Iteration);
             }           
         }
-
+       
         public void PR_DEB(string a_sText) => Print(a_sText, false, LevelEnum.DEB);        
         public void PR_DET(string a_sText) => Print(a_sText, false, LevelEnum.DET);
         public void PR_DEV(string a_sText) => Print(a_sText, false, LevelEnum.DEV);

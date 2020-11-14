@@ -16,58 +16,19 @@ namespace TcpCommunication
     {
         static void Main(string[] args)
         {
-            /*
-            LoginDbObject _dao = new LoginDbObject
-            {
-                Login = "Jacek"
-            };
-
-            Console.WriteLine(_dao);
-
-            _dao.SetPropValue("Login","Testowy");
-            _dao.SetPropValue("Tsn", 10);
-
-            foreach (var _name in _dao.GetPropNameByType(Classes.Database.FieldType.PrimaryKey))
-                Console.WriteLine($"{_name}={_dao.GetPropValue<string>(_name)}");
-
-            Console.ReadKey();
-            */
-            
             Console.Clear();
 
-            Log.CurrentLevel = Log.LevelEnum.GOD;
+            Log.CurrentLevel = Log.LevelEnum.DEB;
 
-            using (var _log = Log.DEB("Program", "Main"))
-            {
-                _log.PR_DEB("coś tutaj sobie wydrukuję");
+            
+            using var _log = Log.DEB("Program", "Main");
 
-                using (var _log1 = Log.DEB("Program","Inside"))
-                {
-                    _log1.PR_DEB("Teraz jestem w środku");
+            _log.PR_DEB("Początek aplikacji");
 
-                    using (var _log2 = Log.DET("Program","InsindeInside"))
-                    {
-                        _log2.PR_DET("I idziemy dalej :D");
-
-                        using (var _log3 = Log.DEB("Program", "InsindeInsideInside"))
-                        {
-                            _log3.PR_DEB("I idziemy dalej :D");
-                            _log3.PR_DEB("I idziemy dalej :D");
-                            _log3.PR_DEB("I idziemy dalej :D");
-                            _log3.PR_DEB("I idziemy dalej :D");
-                        }
-
-                        _log2.PR_DET("I idziemy dalej :D");
-                    }
-
-                }
-
-                _log.PR_DEB("a teraz na zewnątrz :-)");
-            }
 
             if ((args?.Length ?? 0) < 1)
             {
-                Console.WriteLine("Brak argumentu uruchomieniowego!\n1 - serwer\n2 - klient");
+                _log.PR_DEB("Brak argumentu uruchomieniowego! 1 - serwer, 2 - klient");
 
             }
             else
@@ -88,6 +49,7 @@ namespace TcpCommunication
                         new TestClient().Run(); break;
 
                 }
+
             }
 
 

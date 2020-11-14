@@ -9,6 +9,7 @@ using TcpCommunication.Interfaces;
 
 using static TcpCommunication.Interfaces.INetworkAction;
 using System.Threading.Tasks;
+using TcpCommunication.Classes.System;
 
 namespace TcpCommunication
 {
@@ -20,6 +21,11 @@ namespace TcpCommunication
 
         public void StateChanged(State a_eState, StateObject a_oStateObj = null)
         {
+            using var log = Log.DET(this, "StateChanged");
+
+            log.PR_DEB($"state = <{a_eState}> object = <{a_oStateObj}>");
+
+
             lock (LOCKOBJECT)
             {
 
@@ -35,10 +41,12 @@ namespace TcpCommunication
                         break;
 
                     case State.Established:
+                        log.PR_DET("State.Established");
                         OnEstablished(a_oStateObj);
                         break;
 
                     case State.Connecting:
+                        log.PR_DET("State.Established");
                         break;
 
                     case State.Connected:                        
@@ -59,11 +67,13 @@ namespace TcpCommunication
 
         protected void OnReceived(StateObject a_oStateObj)
         {
+            using var log = Log.DEB(this, "OnReceived");
+
             var _client = a_oStateObj.GetObject<ClientService>();
 
             var _message = MessageFactory.Instance.Create(_client.Data.BufferWithData) as IMessage;
 
-            Console.WriteLine($"OnReceived::{_message}");
+            log.PR_DEB($"OnReceived::{_message}");
 
             if (_message.ProcessRequest(a_oStateObj) != null)
             {
@@ -75,11 +85,15 @@ namespace TcpCommunication
 
         protected void OnEstablished(StateObject a_oStateObj)
         {
+            using var log = Log.DEB(this, "OnEstablished");
+
             a_oStateObj.GetData<ClientService>().AsyncReceive();
         }
 
         public virtual void Run()
         {
+            using var log = Log.DEB(this, "Run");
+
             Server = new ServerService<ClientService>(IPAddress.Loopback, 1000)
             {
                 NetworkAction = this
