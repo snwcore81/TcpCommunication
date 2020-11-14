@@ -41,12 +41,10 @@ namespace TcpCommunication
                         break;
 
                     case State.Established:
-                        log.PR_DET("State.Established");
                         OnEstablished(a_oStateObj);
                         break;
 
                     case State.Connecting:
-                        log.PR_DET("State.Established");
                         break;
 
                     case State.Connected:                        

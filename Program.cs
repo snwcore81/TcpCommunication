@@ -18,8 +18,7 @@ namespace TcpCommunication
         {
             Console.Clear();
 
-            Log.CurrentLevel = Log.LevelEnum.DEB;
-
+            Log.CurrentLevel = Log.LevelEnum.ALL;
             
             using var _log = Log.DEB("Program", "Main");
 
