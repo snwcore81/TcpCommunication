@@ -21,7 +21,7 @@ namespace TcpCommunication.Classes.System
             DEB         = 0x0001,
             DET         = 0x0010,
             DEV         = 0x0100,
-            GOD         = 0x1000
+            ALL         = 0x1000
         }
 
         private readonly string         m_sClassName;
