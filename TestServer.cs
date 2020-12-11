@@ -83,7 +83,7 @@ namespace TcpCommunication
 
         protected void OnEstablished(StateObject a_oStateObj)
         {
-            using var log = Log.DEB(this, "OnEstablished");
+            using var _log = Log.DEB(this, "OnEstablished");
 
             a_oStateObj.GetData<ClientService>().AsyncReceive();
         }

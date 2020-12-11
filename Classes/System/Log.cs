@@ -27,7 +27,7 @@ namespace TcpCommunication.Classes.System
         private readonly string         m_sClassName;
         private readonly string         m_sFuncName;
         private readonly LevelEnum      m_eLevel;
-        private readonly bool           m_bLineShift = false;
+        private bool           m_bLineShift = false;
 
         public Log(object a_oParentObject, string a_sFuncName, LevelEnum a_eLevel)
         {
@@ -104,9 +104,12 @@ namespace TcpCommunication.Classes.System
 
         private void Print (string a_sText, bool a_bIsHeader,LevelEnum a_eLevel)
         {
-            if (a_eLevel <= Log.CurrentLevel)
+            lock (LockObject)
             {
-                LogWriter?.Write(GenerateLogShiftLine(a_sText, a_bIsHeader, a_eLevel));
+                if (a_eLevel <= Log.CurrentLevel)
+                {
+                    LogWriter?.Write(GenerateLogShiftLine(a_sText, a_bIsHeader, a_eLevel));
+                }
             }
         }
 
@@ -119,6 +122,8 @@ namespace TcpCommunication.Classes.System
                     LogWriter?.Write(GenerateLogBackLine(m_eLevel));
                     Log.Iteration--;
                 }
+
+                m_bLineShift = true;
 
                 if (Log.Iteration >= 0)
                     FullNameStack.RemoveAt(Log.Iteration);

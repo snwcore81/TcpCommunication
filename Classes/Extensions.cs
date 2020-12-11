@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace TcpCommunication.Classes
 {
@@ -14,6 +15,20 @@ namespace TcpCommunication.Classes
             }
 
             return a_sTypeName;
+        }
+
+        public static string ToDb(this object a_oValue)
+        {
+            string _sResult = string.Empty;
+
+            if (a_oValue == null)
+                _sResult = "null";
+            else if (a_oValue is string)
+                _sResult = $"'{a_oValue}'";
+            else if (Regex.IsMatch(a_oValue.ToString(), @"-?\d+(\.\d+)?"))
+                _sResult = a_oValue.ToString();
+
+            return _sResult;
         }
     }
 }

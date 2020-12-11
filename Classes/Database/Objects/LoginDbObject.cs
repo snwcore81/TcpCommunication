@@ -8,9 +8,20 @@ namespace TcpCommunication.Classes.Database.Objects
 {
     public class LoginDbObject : DbObject<LoginDbObject>
     {
-        [DbField(Type=FieldType.PrimaryKey,Constraint=FieldConstraint.NotNull)]
-        public string Login { get; set; }
+        public override string TableName => "Login_T";
 
+        [DbField(Type=FieldType.PrimaryKey,Constraint=FieldConstraint.NotNull)]
+        public string Login 
+        { 
+            get => Get<string>() ; 
+            set => Set(value); 
+        }
+        [DbField(Constraint = FieldConstraint.NotNull)]
+        public string Password 
+        { 
+            get => Get<string>(); 
+            set => Set(value); 
+        }        
         public LoginDbObject()
         {
             BaseObject = this;
@@ -19,21 +30,10 @@ namespace TcpCommunication.Classes.Database.Objects
         public override bool InitializeFromObject(LoginDbObject Object)
         {
             this.Login = Object.Login;
+            this.Password = Object.Password;
+            this.IsNew = false;
+
             return true;
-        }
-
-        public void DisplayInfo()
-        {
-            foreach (var _prop in GetType().GetProperties().ToList())
-            {
-                if (Attribute.IsDefined(_prop,typeof(DbFieldAttribute)))
-                {
-                    Console.WriteLine(_prop.GetCustomAttribute<DbFieldAttribute>());
-                }
-
-                Console.WriteLine($"<{_prop.Name}> = { _prop.GetValue(this)}");
-                
-            }
         }
     }
 }
