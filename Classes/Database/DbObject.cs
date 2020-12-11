@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using TcpCommunication.Classes.Exceptions;
+using TcpCommunication.Interfaces;
 
 namespace TcpCommunication.Classes.Database
 {
@@ -43,7 +44,7 @@ namespace TcpCommunication.Classes.Database
 
 
     [DataContract]
-    public abstract class DbObject<T> : XmlStorage<T> where T : class
+    public abstract class DbObject<T> : XmlStorage<T>, IDbObject where T : class
     {
         #if DEFAULT_FIELDS
         [IgnoreDataMember]
@@ -59,19 +60,6 @@ namespace TcpCommunication.Classes.Database
         [IgnoreDataMember]
         private bool m_bNew = false;
 
-        #if DEFAULT_FIELDS
-        [DbField, DataMember]
-        public DateTime     InsertDate { get => Get<DateTime>(); set => Set(value); }
-        [DbField, DataMember]
-        public string       InsertName { get => Get<string>(); set => Set(value); }
-        [DbField, DataMember]
-        public DateTime     UpdateDate { get => Get<DateTime>(); set => Set(value); }
-        [DbField, DataMember]
-        public string       UpdateName { get => Get<string>(); set => Set(value); }
-        [DbField, DataMember]
-        public int          Tsn { get => Get<int>(); set => Set(value); }
-        #endif
-
         [DataMember]
         public abstract string TableName { get; }
         [DataMember]
@@ -79,13 +67,6 @@ namespace TcpCommunication.Classes.Database
 
         public DbObject()
         {
-            #if DEFAULT_FIELDS
-            InsertDate = DateTime.Now;
-            InsertName = DEFAULT_NAME;
-            UpdateDate = DateTime.Now;
-            UpdateName = DEFAULT_NAME;
-            Tsn = 0;
-            #endif
             LockForUpdate = false;
         }
 
@@ -199,7 +180,7 @@ namespace TcpCommunication.Classes.Database
             }
         }
 
-        public virtual string[] ColumnNames
+        public virtual string[] PropertiesNamesList
         {
             get
             {
@@ -237,7 +218,7 @@ namespace TcpCommunication.Classes.Database
             return _oResult.ToArray();
         }
 
-        public virtual string[] PropertyValuesList(FieldType a_eField = FieldType.All, bool a_bOnlyChanged = true)
+        public virtual string[] PropertiesNamesAndValuesList(FieldType a_eField = FieldType.All, bool a_bOnlyChanged = true)
         {
             List<string> _oResult = new List<string>();
 
@@ -256,5 +237,14 @@ namespace TcpCommunication.Classes.Database
             return _oResult.ToArray();
         }
 
+        public virtual bool Exists(IDbSource Source)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual bool Select(IDbSource Source) => Source?.Select<T>(this) ?? false;
+        public virtual bool Insert(IDbSource Source) => Source?.Insert<T>(this) ?? false;
+        public virtual bool Update(IDbSource Source) => Source?.Update<T>(this) ?? false;
+        public virtual bool Delete(IDbSource Source) => Source?.Delete<T>(this) ?? false;
     }
 }

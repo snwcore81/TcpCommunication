@@ -79,7 +79,29 @@ namespace TcpCommunication.Classes.Database
 
         public bool Delete<T>(DbObject<T> Object) where T : class
         {
-            throw new NotImplementedException();
+            using var _log = Log.DEB(this, "Delete");
+
+            int _iRowsAffected = 0;
+
+            string _sQuery = $"DELETE FROM {Object.TableName} WHERE 1=1";
+
+            foreach (var _oPK in Object.PrimaryKey)
+            {
+                _sQuery += $" AND {_oPK.Key}={_oPK.Value.ToDb()}";
+            }
+
+            _iRowsAffected = ExecuteNonQuery(_sQuery);
+
+            if (_iRowsAffected < 1)
+            {
+                _log.PR_DEB("No row deleted");
+            }
+            else
+            {
+                _log.PR_DEB("Row deleted");
+            }
+
+            return _iRowsAffected>0;
         }
 
         public bool Exists<T>(DbObject<T> Object) where T : class
@@ -91,7 +113,7 @@ namespace TcpCommunication.Classes.Database
         {
             using var _log = Log.DEB(this, "Insert");
 
-            string _sQuery = $"INSERT INTO {Object.TableName} ({string.Join(',', Object.ColumnNames)}) " +
+            string _sQuery = $"INSERT INTO {Object.TableName} ({string.Join(',', Object.PropertiesNamesList)}) " +
                              $"VALUES ({string.Join(',', Object.ValuesList())})";
 
             int _iRowAffected = ExecuteNonQuery(_sQuery);
@@ -113,6 +135,9 @@ namespace TcpCommunication.Classes.Database
             {
                 _sQuery += $" AND {_oPK.Key}={_oPK.Value.ToDb()}";
             }
+
+            if (Object.LockForUpdate)
+                _sQuery += " FOR UPDATE";
 
             MySqlCommand _oSqlCmd = new MySqlCommand(_sQuery, Connection);
 
@@ -145,7 +170,7 @@ namespace TcpCommunication.Classes.Database
 
             if (Object.IsChanged)
             {
-                string _sQuery = $"UPDATE {Object.TableName} SET {string.Join(',',Object.PropertyValuesList(FieldType.Other))} WHERE 1=1";
+                string _sQuery = $"UPDATE {Object.TableName} SET {string.Join(',',Object.PropertiesNamesAndValuesList(FieldType.Other))} WHERE 1=1";
 
                 foreach (var _oPK in Object.PrimaryKey)
                 {
@@ -164,7 +189,7 @@ namespace TcpCommunication.Classes.Database
                 _log.PR_DEB("Row updated");
             }
 
-            return false;
+            return _iRowsAffected>0;
         }
 
         public void TransactionCommit()

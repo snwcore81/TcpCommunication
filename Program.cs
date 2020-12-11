@@ -24,11 +24,6 @@ namespace TcpCommunication
             
             using var _log = Log.DEB("Program", "Main");
 
-            LoginDbObject _oLogin = new LoginDbObject
-            {
-                Login = "jacek"
-            };
-
             var _db = new MySqlSource
             {
                 Host = "127.0.0.1",
@@ -40,15 +35,24 @@ namespace TcpCommunication
 
             _db.Connect();
 
+
+            LoginDbObject _oLogin = new LoginDbObject
+            {
+                Login = "jacek"
+            };
+
             try
             {
                 _db.TransactionStart();
 
-                if (_db.Select<LoginDbObject>(_oLogin))
+                if (_oLogin.Select(_db))
                 {
-                    _oLogin.Password = "test";
-
-                    _db.Update<LoginDbObject>(_oLogin);
+                    _oLogin.Delete(_db);
+                }
+                else
+                {
+                    _oLogin.Password = "test123";
+                    _oLogin.Insert(_db);
                 }
 
                 _db.TransactionCommit();
