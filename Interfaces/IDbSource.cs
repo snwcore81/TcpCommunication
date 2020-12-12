@@ -16,6 +16,8 @@ namespace TcpCommunication.Interfaces
         int ExecuteNonQuery(string a_sQuery);
         int ExecuteNonQuery(string[] a_oQueries);
 
+        List<DbRow> ExecuteReader(string a_sQuery);
+
         void TransactionStart();
         void TransactionRollback();
         void TransactionCommit();
@@ -24,6 +26,6 @@ namespace TcpCommunication.Interfaces
         bool Select<T>(DbObject<T> Object) where T : class;
         bool Insert<T>(DbObject<T> Object) where T : class;
         bool Update<T>(DbObject<T> Object) where T : class;
-        bool Delete<T>(DbObject<T> Object) where T : class;
+        bool Delete<T>(DbObject<T> Object) where T : class;        
     }
 }

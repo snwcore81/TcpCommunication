@@ -8,22 +8,14 @@ namespace TcpCommunication.Classes.Database.Objects
 {
     public class LoginDbObject : DbObject<LoginDbObject>
     {
-        public override string TableName => "Login_T";
-
         [DbField(Type=FieldType.PrimaryKey,Constraint=FieldConstraint.NotNull)]
-        public string Login 
-        { 
-            get => Get<string>() ; 
-            set => Set(value); 
-        }
+        public string Login { get => Get<string>() ; set => Set(value); }
+
         [DbField(Constraint = FieldConstraint.NotNull)]
-        public string Password 
-        { 
-            get => Get<string>(); 
-            set => Set(value); 
-        }        
+        public string Password { get => Get<string>(); set => Set(value); }        
         public LoginDbObject()
         {
+            TableName = "Login_T";
             BaseObject = this;
         }
 

@@ -76,6 +76,64 @@ namespace TcpCommunication.Classes.Database
             return false;
         }
 
+        public void Dispose()
+        {
+            Disconnect();
+        }
+        public int ExecuteNonQuery(string a_sQuery) => ExecuteNonQuery(new string[] { a_sQuery });
+
+        public int ExecuteNonQuery(string[] a_oQueries)
+        {
+            using var _log = Log.DEB(this, "ExecuteNonQuery");
+
+            int _iQueriesExecuted = 0;
+
+            foreach (var _sQuery in a_oQueries)
+            {
+                MySqlCommand _oSqlCmd = new MySqlCommand(_sQuery, Connection);
+
+                _log.PR_DEB($"Query=[{_sQuery}]");
+
+                _iQueriesExecuted += _oSqlCmd.ExecuteNonQuery();
+            }
+
+            return _iQueriesExecuted;
+        }
+
+        public List<DbRow> ExecuteReader(string a_sQuery)
+        {
+            using var _log = Log.DEB(this, "ExecuteReader");
+
+            _log.PR_DEB($"Query=[{a_sQuery}]");
+
+            List<DbRow> _oResult = new List<DbRow>();
+
+            MySqlCommand _oSqlCmd = new MySqlCommand(a_sQuery, Connection);
+
+            MySqlDataReader _oSqlDataReader = _oSqlCmd.ExecuteReader();
+
+            while (_oSqlDataReader.Read())
+            {
+                DbRow _oRow = new DbRow();
+
+                for (int i = 0; i < _oSqlDataReader.FieldCount; ++i)
+                {
+                    _oRow.Add(_oSqlDataReader.GetName(i), _oSqlDataReader[i]);
+                }
+
+                _oResult.Add(_oRow);
+
+                _log.PR_DEB(_oRow.ToString());
+
+            }
+
+            _log.PR_DEB($"Fetched {_oResult.Count} row(s)");
+
+            if (!_oSqlDataReader.IsClosed)
+                _oSqlDataReader.Close();
+
+            return _oResult;
+        }
 
         public bool Delete<T>(DbObject<T> Object) where T : class
         {
@@ -127,8 +185,6 @@ namespace TcpCommunication.Classes.Database
         {
             using var _log = Log.DEB(this, "Select");
 
-            bool _bResult = false;
-
             string _sQuery = $"SELECT * FROM {Object.TableName} WHERE 1=1";
 
             foreach (var _oPK in Object.PrimaryKey)
@@ -139,28 +195,12 @@ namespace TcpCommunication.Classes.Database
             if (Object.LockForUpdate)
                 _sQuery += " FOR UPDATE";
 
-            MySqlCommand _oSqlCmd = new MySqlCommand(_sQuery, Connection);
-
-            MySqlDataReader _oSqlDataReader = _oSqlCmd.ExecuteReader();
-
-            if (_oSqlDataReader.Read())
+            foreach (var _oRow in ExecuteReader(_sQuery))
             {
-                for (int i=0;i<_oSqlDataReader.FieldCount;++i)
-                {
-                    Object.Set(_oSqlDataReader[i], _oSqlDataReader.GetName(i));
-                }
-
-                Object.IsNew = false;
-
-                _log.PR_DEB(Object.ToString());
-
-                _bResult = true;
+                return Object.Set(_oRow);
             }
 
-            if (!_oSqlDataReader.IsClosed)
-                _oSqlDataReader.Close();
-
-            return _bResult;
+            return false;
         }
         public bool Update<T>(DbObject<T> Object) where T : class
         {
@@ -239,29 +279,6 @@ namespace TcpCommunication.Classes.Database
             return true;
         }
 
-        public void Dispose()
-        {
-            Disconnect();
-        }
-        public int ExecuteNonQuery(string a_sQuery) => ExecuteNonQuery(new string[] { a_sQuery });
-
-        public int ExecuteNonQuery(string[] a_oQueries)
-        {
-            using var _log = Log.DEB(this, "ExecuteNonQuery");
-
-            int _iQueriesExecuted = 0;
-
-            foreach (var _sQuery in a_oQueries)
-            {
-                MySqlCommand _oSqlCmd = new MySqlCommand(_sQuery, Connection);
-
-                _log.PR_DEB($"Query=[{_sQuery}]");
-
-                _iQueriesExecuted += _oSqlCmd.ExecuteNonQuery();
-            }
-
-            return _iQueriesExecuted;
-        }
 
     }
 }

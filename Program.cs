@@ -41,6 +41,10 @@ namespace TcpCommunication
                 Login = "jacek"
             };
 
+            foreach (var _row in _db.ExecuteReader("SELECT * FROM Login_T"))
+            {
+            }
+
             try
             {
                 _db.TransactionStart();
@@ -66,6 +70,7 @@ namespace TcpCommunication
 
             _db.Disconnect();
 
+            Console.WriteLine(Encoding.UTF8.GetString(_oLogin.ToXml().ToArray()));
             
             /*
             Console.WriteLine(_oLogin);

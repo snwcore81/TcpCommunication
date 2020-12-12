@@ -46,11 +46,6 @@ namespace TcpCommunication.Classes.Database
     [DataContract]
     public abstract class DbObject<T> : XmlStorage<T>, IDbObject where T : class
     {
-        #if DEFAULT_FIELDS
-        [IgnoreDataMember]
-        public const string DEFAULT_NAME = "init";
-        #endif
-
         [IgnoreDataMember]
         private readonly Dictionary<string, Object> m_oValues = new Dictionary<string, object>();
         [IgnoreDataMember]
@@ -61,7 +56,7 @@ namespace TcpCommunication.Classes.Database
         private bool m_bNew = false;
 
         [DataMember]
-        public abstract string TableName { get; }
+        public string TableName { get; protected set; }
         [DataMember]
         public bool LockForUpdate { get; set; }
 
@@ -111,6 +106,19 @@ namespace TcpCommunication.Classes.Database
 
             m_oValues[a_sPropName] = a_oValue;
         }
+
+        public virtual bool Set(DbRow a_oRow)
+        {
+            foreach (var _oElement in a_oRow.Data)
+            {
+                Set(_oElement.Value, _oElement.Key);
+            }
+
+            IsNew = false;
+
+            return true;
+        }
+
         public virtual bool IsChanged => m_oChangedValues.Count > 0;
         public virtual bool IsNew
         {
