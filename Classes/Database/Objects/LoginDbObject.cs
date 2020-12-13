@@ -13,12 +13,14 @@ namespace TcpCommunication.Classes.Database.Objects
 
         [DbField(Constraint = FieldConstraint.NotNull)]
         public string Password { get => Get<string>(); set => Set(value); }        
+
+        [DbField(Constraint = FieldConstraint.Nullable)]
+        public DateTime LastUpdate { get => Get<DateTime>(); set => Set(value); }
         public LoginDbObject()
         {
             TableName = "Login_T";
             BaseObject = this;
         }
-
         public override bool InitializeFromObject(LoginDbObject Object)
         {
             this.Login = Object.Login;

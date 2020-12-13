@@ -7,7 +7,7 @@ namespace TcpCommunication.Interfaces
 {
     public interface INetworkAction
     {
-        public enum State
+        public enum NetworkState
         {
             Connecting = 0x0001,
             Connected  = 0x0002,
@@ -20,6 +20,6 @@ namespace TcpCommunication.Interfaces
             Error      = 0x0100
         }
 
-        void StateChanged(State a_eState, StateObject a_oStateObject = null);
+        void NetworkStateChanged(NetworkState a_eState, StateObject a_oStateObject = null);
     }
 }

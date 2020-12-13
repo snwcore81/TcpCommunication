@@ -40,7 +40,7 @@ namespace TcpCommunication.Classes.Services
             {
                 m_oNetObject.BeginConnect(Address, Port, new AsyncCallback(ConnectCallback), this);
 
-                NetworkAction?.StateChanged(State.Connecting, new StateObject(this));
+                NetworkAction?.NetworkStateChanged(NetworkState.Connecting, new StateObject(this));
 
                 return;
             }
@@ -48,7 +48,7 @@ namespace TcpCommunication.Classes.Services
             {
             }
 
-            NetworkAction?.StateChanged(State.Error,new StateObject(this));
+            NetworkAction?.NetworkStateChanged(NetworkState.Error,new StateObject(this));
         }
 
         protected virtual void ConnectCallback(IAsyncResult ar)
@@ -59,7 +59,7 @@ namespace TcpCommunication.Classes.Services
             {
                 _obj.NetworkSocket.EndConnect(ar);
 
-                _obj?.NetworkAction?.StateChanged(State.Connected, new StateObject(this));
+                _obj?.NetworkAction?.NetworkStateChanged(NetworkState.Connected, new StateObject(this));
 
                 return;
             }
@@ -67,7 +67,7 @@ namespace TcpCommunication.Classes.Services
             {
             }
 
-            _obj?.NetworkAction?.StateChanged(State.Error,new StateObject(this));
+            _obj?.NetworkAction?.NetworkStateChanged(NetworkState.Error,new StateObject(this));
         }
 
       

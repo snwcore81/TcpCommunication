@@ -51,13 +51,13 @@ namespace TcpCommunication.Classes
         {
             try
             {
-                NetworkAction?.StateChanged(State.Sending, new StateObject(this,a_oData));
+                NetworkAction?.NetworkStateChanged(NetworkState.Sending, new StateObject(this,a_oData));
 
                 NetworkSocket?.BeginSend(a_oData.Buffer, 0, a_oData.DataLength(true), SocketFlags.None, new AsyncCallback(SendCallback), this);
             }
             catch (Exception)
             {
-                NetworkAction?.StateChanged(State.Error,new StateObject(this));
+                NetworkAction?.NetworkStateChanged(NetworkState.Error,new StateObject(this));
             }
         }
 
@@ -67,13 +67,13 @@ namespace TcpCommunication.Classes
 
             try
             {
-                NetworkAction?.StateChanged(State.Receiving, new StateObject(this));
+                NetworkAction?.NetworkStateChanged(NetworkState.Receiving, new StateObject(this));
 
                 NetworkSocket?.BeginReceive(Data.Buffer, 0, Data.BufferLength, SocketFlags.None, new AsyncCallback(ReceiveCallback), this);
             }
             catch (Exception)
             {
-                NetworkAction?.StateChanged(State.Error,new StateObject(this));
+                NetworkAction?.NetworkStateChanged(NetworkState.Error,new StateObject(this));
             }
         }
 
@@ -91,7 +91,7 @@ namespace TcpCommunication.Classes
             {
             }
 
-            NetworkAction?.StateChanged(State.Error);
+            NetworkAction?.NetworkStateChanged(NetworkState.Error);
 
             return null;            
         }
@@ -104,7 +104,7 @@ namespace TcpCommunication.Classes
             {
                 if (_obj.NetworkSocket.EndSend(ar) > 0)
                 {
-                    _obj.NetworkAction?.StateChanged(State.Sent,new StateObject(this));
+                    _obj.NetworkAction?.NetworkStateChanged(NetworkState.Sent,new StateObject(this));
 
                     return;
                 }                
@@ -113,7 +113,7 @@ namespace TcpCommunication.Classes
             {
             }
 
-            _obj.NetworkAction?.StateChanged(State.Error);
+            _obj.NetworkAction?.NetworkStateChanged(NetworkState.Error);
         }
 
         protected virtual void ReceiveCallback(IAsyncResult ar)
@@ -126,7 +126,7 @@ namespace TcpCommunication.Classes
 
                 if (_iSize > 0 && (_obj.Data?.HasAnyData ?? false))
                 {
-                    _obj.NetworkAction?.StateChanged(State.Received,new StateObject(this, Data));
+                    _obj.NetworkAction?.NetworkStateChanged(NetworkState.Received,new StateObject(this, Data));
 
                     return;
                 }
@@ -135,7 +135,7 @@ namespace TcpCommunication.Classes
             {               
             }
 
-            _obj.NetworkAction?.StateChanged(State.Error,new StateObject(this));
+            _obj.NetworkAction?.NetworkStateChanged(NetworkState.Error,new StateObject(this));
         }
         public override string ToString() => $"Identifier={Identifier}[{GetType().Name.CleanType()}={NetworkSocket?.LocalEndPoint}]";
         public virtual bool HasRegisteredServer => RegisteredServer != null;

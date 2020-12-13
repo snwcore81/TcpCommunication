@@ -22,35 +22,35 @@ namespace TcpCommunication
 
         public bool StillWorking = true;
 
-        public void StateChanged(State a_eState, StateObject a_oStateObj = null)
+        public void NetworkStateChanged(NetworkState a_eState, StateObject a_oStateObj = null)
         {
             lock (LOCKOBJECT)
             {
 
                 switch (a_eState)
                 {
-                    case State.Sending:
+                    case NetworkState.Sending:
                         break;
 
-                    case State.Sent:
+                    case NetworkState.Sent:
                         break;
 
-                    case State.Connecting:
+                    case NetworkState.Connecting:
                         break;
 
-                    case State.Connected:
+                    case NetworkState.Connected:
                         OnConnected(a_oStateObj);
 
                         break;
 
-                    case State.Receiving:                        
+                    case NetworkState.Receiving:                        
                         break;
 
-                    case State.Received:
+                    case NetworkState.Received:
                         OnReceived(a_oStateObj);
                         break;
 
-                    case State.Error:
+                    case NetworkState.Error:
                         break;
                 }
             }

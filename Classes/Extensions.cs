@@ -25,8 +25,15 @@ namespace TcpCommunication.Classes
                 _sResult = "null";
             else if (a_oValue is string)
                 _sResult = $"'{a_oValue}'";
+            else if (a_oValue is DateTime)
+            {
+                var _oDate = (DateTime)a_oValue;
+                _sResult = $"STR_TO_DATE('{_oDate.Day}-{_oDate.Month}-{_oDate.Year}','%d-%m-%Y')";
+            }
             else if (Regex.IsMatch(a_oValue.ToString(), @"-?\d+(\.\d+)?"))
                 _sResult = a_oValue.ToString();
+
+
 
             return _sResult;
         }

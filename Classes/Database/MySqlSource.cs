@@ -94,8 +94,6 @@ namespace TcpCommunication.Classes.Database
 
                 _log.PR_DEB($"Query=[{_sQuery}]");
 
-                
-
                 _iQueriesExecuted += _oSqlCmd.ExecuteNonQuery();
             }
 
@@ -133,6 +131,33 @@ namespace TcpCommunication.Classes.Database
 
             if (!_oSqlDataReader.IsClosed)
                 _oSqlDataReader.Close();
+
+            return _oResult;
+        }
+
+        public List<T> ExecuteReader<T>(string a_sWhereClausule = "", string a_sOrderByClausule = "") 
+            where T : DbObject<T>, new()
+        {
+            List<T> _oResult = new List<T>();
+
+            string _sQuery = $"SELECT * FROM {new T().TableName}";
+
+            if (!string.IsNullOrEmpty(a_sWhereClausule))
+                _sQuery += $"WHERE 1=1 AND {a_sWhereClausule} ";
+
+            if (!string.IsNullOrEmpty(a_sOrderByClausule))
+                _sQuery += $"ORDER BY {a_sOrderByClausule} ";
+
+            foreach (var _oRow in ExecuteReader(_sQuery))
+            {
+                T _oRecord = new T();
+
+                _oRecord.Set(_oRow);
+
+                _oRecord.IsNew = false;
+
+                _oResult.Add(_oRecord);
+            }
 
             return _oResult;
         }

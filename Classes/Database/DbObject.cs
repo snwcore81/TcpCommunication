@@ -77,7 +77,14 @@ namespace TcpCommunication.Classes.Database
 
             if (m_oValues.ContainsKey(a_sPropName))
             {
-                return (U)Convert.ChangeType(m_oValues[a_sPropName], typeof(U));
+                try
+                {
+                    return (U)Convert.ChangeType(m_oValues[a_sPropName], typeof(U));
+                }
+                catch (Exception)
+                {
+                }
+                
             }
 
             return default;
@@ -92,7 +99,7 @@ namespace TcpCommunication.Classes.Database
 
             bool _bIsNullable = (typeof(T).GetProperties().First(a => a.Name.ToLower() == a_sPropName)?.GetCustomAttribute<DbFieldAttribute>()?.Constraint == FieldConstraint.Nullable);
 
-            if (!_bIsNullable && a_oValue == null)
+            if (!_bIsNullable && string.IsNullOrEmpty(a_oValue?.ToString()))
                 throw new DaoPropertyNotNullable(this, a_sPropName);
 
             if (m_oValues.ContainsKey(a_sPropName) && !m_oValues[a_sPropName].Equals(a_oValue))

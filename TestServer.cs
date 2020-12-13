@@ -19,7 +19,7 @@ namespace TcpCommunication
 
         public ServerService<ClientService> Server;
 
-        public void StateChanged(State a_eState, StateObject a_oStateObj = null)
+        public void NetworkStateChanged(NetworkState a_eState, StateObject a_oStateObj = null)
         {
             using var log = Log.DET(this, "StateChanged");
 
@@ -31,33 +31,33 @@ namespace TcpCommunication
 
                 switch (a_eState)
                 {
-                    case State.Sending:
+                    case NetworkState.Sending:
                         break;
 
-                    case State.Sent:
+                    case NetworkState.Sent:
                         break;
 
-                    case State.Listening:
+                    case NetworkState.Listening:
                         break;
 
-                    case State.Established:
+                    case NetworkState.Established:
                         OnEstablished(a_oStateObj);
                         break;
 
-                    case State.Connecting:
+                    case NetworkState.Connecting:
                         break;
 
-                    case State.Connected:                        
+                    case NetworkState.Connected:                        
                         break;
 
-                    case State.Receiving:
+                    case NetworkState.Receiving:
                         break;
 
-                    case State.Received:
+                    case NetworkState.Received:
                         OnReceived(a_oStateObj);
                         break;
 
-                    case State.Error:
+                    case NetworkState.Error:
                         break;
                 }
             }

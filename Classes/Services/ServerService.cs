@@ -42,20 +42,20 @@ namespace TcpCommunication.Classes.Services
             {
             }
 
-            NetworkAction?.StateChanged(State.Error,new StateObject(this));
+            NetworkAction?.NetworkStateChanged(NetworkState.Error,new StateObject(this));
         }
 
         protected virtual void AcceptConnection()
         {
             try
             {
-                NetworkAction?.StateChanged(State.Listening, new StateObject(this));
+                NetworkAction?.NetworkStateChanged(NetworkState.Listening, new StateObject(this));
 
                 m_oNetObject?.BeginAcceptTcpClient(new AsyncCallback(AcceptCallback), this);                
             }
             catch (Exception e)
             {
-                NetworkAction?.StateChanged(State.Error, new StateObject(this,e));
+                NetworkAction?.NetworkStateChanged(NetworkState.Error, new StateObject(this,e));
             }            
         }
 
@@ -76,7 +76,7 @@ namespace TcpCommunication.Classes.Services
 
                 _obj?.m_oConnectedClients?.Add(_client);
 
-                _obj?.NetworkAction?.StateChanged(State.Established, new StateObject(this,_client));
+                _obj?.NetworkAction?.NetworkStateChanged(NetworkState.Established, new StateObject(this,_client));
 
                 _obj?.AcceptConnection();
 
@@ -86,7 +86,7 @@ namespace TcpCommunication.Classes.Services
             {
             }
 
-            _obj?.NetworkAction?.StateChanged(State.Error,new StateObject(this));
+            _obj?.NetworkAction?.NetworkStateChanged(NetworkState.Error,new StateObject(this));
         }
 
         public List<T> ConnectedClients
