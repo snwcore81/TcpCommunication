@@ -94,6 +94,8 @@ namespace TcpCommunication.Classes.Database
 
                 _log.PR_DEB($"Query=[{_sQuery}]");
 
+                
+
                 _iQueriesExecuted += _oSqlCmd.ExecuteNonQuery();
             }
 

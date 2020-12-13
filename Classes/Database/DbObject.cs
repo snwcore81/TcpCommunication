@@ -47,9 +47,7 @@ namespace TcpCommunication.Classes.Database
     public abstract class DbObject<T> : XmlStorage<T>, IDbObject where T : class
     {
         [IgnoreDataMember]
-        private readonly Dictionary<string, Object> m_oValues = new Dictionary<string, object>();
-        [IgnoreDataMember]
-        private readonly Dictionary<string, Object> m_oOldValues = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> m_oValues = new Dictionary<string, object>();
         [IgnoreDataMember]
         private readonly Dictionary<string, bool> m_oChangedValues = new Dictionary<string, bool>();
         [IgnoreDataMember]
@@ -100,8 +98,6 @@ namespace TcpCommunication.Classes.Database
             if (m_oValues.ContainsKey(a_sPropName) && !m_oValues[a_sPropName].Equals(a_oValue))
             {
                 m_oChangedValues[a_sPropName] = true;
-
-                m_oOldValues[a_sPropName] = m_oValues[a_sPropName];
             }
 
             m_oValues[a_sPropName] = a_oValue;
@@ -129,7 +125,6 @@ namespace TcpCommunication.Classes.Database
 
                 if (!m_bNew)
                 {
-                    m_oOldValues.Clear();
                     m_oChangedValues.Clear();
                 }
             }

@@ -30,5 +30,6 @@ namespace TcpCommunication.Classes
 
             return _sResult;
         }
+
     }
 }
