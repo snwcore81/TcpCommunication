@@ -33,10 +33,10 @@ namespace TcpCommunication.Classes.Database
 
         public bool Connect()
         {
-            using var _log = Log.DEB(this, "Connect");
-
             if (IsConnected)
                 return true;
+
+            using var _log = Log.DEB(this, "Connect");
 
             try
             {
@@ -58,10 +58,10 @@ namespace TcpCommunication.Classes.Database
 
         public bool Disconnect()
         {
-            using var _log = Log.DEB(this, "Disconnect");
-
             if (!IsConnected)
                 return true;
+
+            using var _log = Log.DEB(this, "Disconnect");
 
             try
             {

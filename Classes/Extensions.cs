@@ -33,9 +33,12 @@ namespace TcpCommunication.Classes
             else if (Regex.IsMatch(a_oValue.ToString(), @"-?\d+(\.\d+)?"))
                 _sResult = a_oValue.ToString();
 
-
-
             return _sResult;
+        }
+
+        public static string ZrobCos(this string a_sInput)
+        {
+            return $"<{a_sInput}>";
         }
 
     }

@@ -41,10 +41,10 @@ namespace TcpCommunication
 
             foreach (var _oLogin in _db.ExecuteReader<LoginDbObject>())
             {
-                _db.TransactionStart();
-
                 try
                 {
+                    _db.TransactionStart();
+
                     Console.WriteLine(_oLogin);
 
                     Console.Write($"Podaj nowe hasło dla użytkownika <{_oLogin.Login}>:");
@@ -55,7 +55,9 @@ namespace TcpCommunication
                         _oLogin.LastUpdate = DateTime.Now;
                         _oLogin.Update(_db);
                     }
-                    
+
+                    _db.TransactionCommit();
+
                 }
                 catch (Exception e)
                 {
@@ -63,8 +65,6 @@ namespace TcpCommunication
 
                     _db.TransactionRollback();
                 }
-
-                _db.TransactionCommit();
             }
 
 

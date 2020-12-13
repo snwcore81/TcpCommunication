@@ -16,6 +16,7 @@ namespace TcpCommunication.Classes.Database.Objects
 
         [DbField(Constraint = FieldConstraint.Nullable)]
         public DateTime LastUpdate { get => Get<DateTime>(); set => Set(value); }
+
         public LoginDbObject()
         {
             TableName = "Login_T";

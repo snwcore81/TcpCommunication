@@ -17,7 +17,6 @@ namespace TcpCommunication.Interfaces
         int ExecuteNonQuery(string[] a_oQueries);
 
         List<DbRow> ExecuteReader(string a_sQuery);
-
         List<T> ExecuteReader<T>(string a_sWhereClausule = "", string a_sOrderByClausule = "") where T : DbObject<T>, new();
 
         void TransactionStart();
