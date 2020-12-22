@@ -14,7 +14,7 @@ namespace TcpCommunication.Classes.Messages
         [DataMember]
         public string Login { get; set; }
         [DataMember]
-        public Response Response { get; private set; }
+        public Response Response { get; set; }
 
         public LoginMessage()
         {

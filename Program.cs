@@ -12,6 +12,8 @@ using TcpCommunication.Classes.Messages;
 using TcpCommunication.Classes.Exceptions;
 using TcpCommunication.Classes.System;
 using TcpCommunication.Classes.Database;
+using System.Collections.Generic;
+using TcpCommunication.Classes.Business;
 
 namespace TcpCommunication
 {
@@ -21,6 +23,13 @@ namespace TcpCommunication
         {
             Console.Clear();
 
+            //User.Add().SaveAsXml("user.xml");
+
+            var _oUser = User.LoadFromXml(@"user.xml");
+
+            Console.WriteLine(_oUser);
+
+            /*
             Log.CurrentLevel = Log.LevelEnum.DEB;
             Log.LogWriter = new ConsoleLogWriter();
 
@@ -66,40 +75,9 @@ namespace TcpCommunication
                     _db.TransactionRollback();
                 }
             }
-
-
+            
             _db.Disconnect();
-
-            /*
-            LoginDbObject _oLogin = new LoginDbObject
-            {
-                Login = "jacek"
-            }; 
-
-            try
-            {
-                _db.TransactionStart();
-
-                if (_oLogin.Select(_db))
-                {
-                    _oLogin.Delete(_db);
-                }
-                else
-                {
-                    _oLogin.Password = "test123";
-                    _oLogin.Insert(_db);
-                }
-
-                _db.TransactionCommit();
-            }
-            catch (Exception e)
-            {
-                _log.PR_DEB($"Exception! {e.Message}");
-
-                _db.TransactionRollback();
-            }
             */
-
         }
     }
 }
